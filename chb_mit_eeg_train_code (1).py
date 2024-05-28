@@ -1,3 +1,7 @@
+
+
+
+
 import pyedflib as edf
 import numpy as np
 import glob
@@ -19,14 +23,61 @@ from tensorflow.keras.layers import Dense, Conv1D, Flatten, Dropout, MaxPooling1
 from tensorflow.keras.utils import to_categorical
 
 
+
+
+
 WINDOW_STEP = 256
 
-files = glob.glob('chb0*.edf')
+files = glob.glob('*.edf')
 
 seizure_period_foreach_file = [
     (2996, 3036),
     (1467, 1494),
     (1732, 1772),
+    (1015, 1066),
+    (1720, 1810),
+    (327, 420),
+    (1862, 1963),
+    (130, 212),
+    (2972, 3053),
+    (362, 414),
+    (731, 796),
+    (432, 501),
+    (2162, 2214),
+    (7804, 7853),
+    (1679, 1781),
+    (3782, 3898),
+    (417, 532),
+    (1086, 1196),
+    (2317, 2413),
+    (2451, 2571),
+    (2348, 2465),
+    (327, 347),
+    (6211, 6231),
+    (12500, 12516),
+    (10833, 10845),
+    (506, 519),
+    (7799, 7811),
+    (9387, 9403),
+    (4920, 5006),
+    (3285, 3381),
+    (13688, 13831),
+    (2670, 2841),
+    (2856, 3046),
+    (2988, 3122),
+    (2417, 2577),
+    (2083, 2347),
+    (12231, 12295),
+    (2951, 3030),
+    (9196, 9267),
+    (5299, 5361),
+    (6313, 6348),
+    (6888, 6958),
+    (2382, 2447),
+    (3021, 3079),
+    (3801, 3877),
+    (4618, 4707),
+    (1383, 1437),
 ]
 
 seizure_period_concat_with_file = zip(files, seizure_period_foreach_file)
@@ -93,7 +144,7 @@ for i in range(len(sample_signals)):
 """Deleting first 5% & last 5% signals (noise)"""
 
 def remove_noise(signals):
-    for i in range(len(signals)):
+    for index in range(len(signals)):
         low_range = int(0.05 * len(signals[i][0]))
         high_range = int(0.95*len(signals[i][0]))
         signals[i] = signals[i][:,low_range:high_range]
@@ -123,7 +174,7 @@ WINDOW_SIZE = 5 * WINDOW_STEP
 non_seizure_signals = np.zeros((0, 2, WINDOW_SIZE))
 non_seizure_y_labels = []
 
-for index in range(len(signals_without_noise)):
+for i in range(len(signals_without_noise)):
     try:
         for j in range(WINDOW_STEP):
             random_index = random.randint(0, len(signals_without_noise[i][0]) - WINDOW_SIZE)
@@ -367,6 +418,16 @@ x_train, x_test, y_train, y_test = train_test_split(final_signals, final_y_label
 
 y_train_categorical = to_categorical(y_train)
 y_test_categorical = to_categorical(y_test)
+
+"""CNN
+
+A neural network with 3 convolutional layers, 3 max pooling and 2 fully connected layers.
+
+* Kernel Size = Size of window
+* Filter = Number of filter
+* Dense Layer = Number of neurons
+* Dropout Layer = Number of neurons in dropping level
+"""
 
 KERNEL_SIZE = 5
 FILTER_SIZE = 256
